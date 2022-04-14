@@ -2,4 +2,5 @@
 
 **Overview:**
 
-A game in which you have to find all matching images as fast as you can.
+A game in which you have to find all matching images for the least amount of turns.
+

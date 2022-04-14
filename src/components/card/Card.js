@@ -1,10 +1,20 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
-const Card = ({imgSrc, isDuplicate, selected, setSelected}) => {
+const Card = ({index, imgSrc, isDuplicate, selected, selectImage, photoSize}) => {
+
+  const styles = {
+    width: photoSize,
+    height: photoSize,
+    background: selected ? `url(${imgSrc})` : "gray",
+  }
+
+  useEffect(() => {
+
+  }, [styles])
 
   return (
-    <div className="card" onClick={() => console.log(isDuplicate)}>
-      <img src={imgSrc} alt=""/>
+    <div style={styles} className="card"
+         onClick={() => selectImage(index)}>
     </div>
   );
 };
