@@ -11,3 +11,7 @@
         grid-template: repeat(4, 1fr) / repeat(4, 1fr);
     }
 }
+
+.card {
+    cursor: pointer;
+}

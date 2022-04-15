@@ -7,10 +7,11 @@ import Card from "../card/Card";
 function App() {
   const [images, setImages] = useState([{}]);
   const [showSpinner, setShowSpinner] = useState(false);
-  const [isOneImageSelected, setIsOneImageSelected] = useState(false);
+  const [imageSelectedCount, setImageSelectedCount] = useState(0);
+  const [indexOfFirstOpenImage, setIndexOfFirstOpenImage] = useState(null);
 
   const NUMBER_OF_IMAGES = 8;
-  const photoSize = Math.floor(window.innerWidth / 8);
+  const photoSize = Math.floor(window.innerWidth / 8.5);
 
   useEffect(() => {
     fillArray();
@@ -26,10 +27,10 @@ function App() {
         const imgObject = {
           imgSrc: URL.createObjectURL(blob),
           selected: false,
-          isDuplicate: false
+          completed: false
         }
         allImages.splice(getRandomNumber(), 0, imgObject);
-        allImages.splice(getRandomNumber(), 0, {...imgObject, isDuplicate: true});
+        allImages.splice(getRandomNumber(), 0, imgObject);
       }
       setImages(allImages);
       setShowSpinner(false);
@@ -42,14 +43,37 @@ function App() {
     return Math.floor(Math.random() * NUMBER_OF_IMAGES * 2);
   }
 
-  function selectImage(index) {
-    if (isOneImageSelected) {
-      return console.log("Already selected");
+  function selectImage(indexOfSelected, selected, completed) {
+    if (selected || completed) return;
+    setImages(prevImages => prevImages.map((img, currentIndex) => {
+      return currentIndex === indexOfSelected ? {...img, selected: true} : img;
+    }));
+    setImageSelectedCount(1);
+    setIndexOfFirstOpenImage(indexOfSelected);
+    if (imageSelectedCount === 1) {
+      setImageSelectedCount(2);
+      if (images[indexOfSelected].imgSrc === images[indexOfFirstOpenImage].imgSrc) {
+        setTimeout(() => updateImages(indexOfSelected, true), 500);
+      } else {
+        setTimeout(() => updateImages(indexOfSelected, false), 500);
+      }
     }
-    setIsOneImageSelected(true)
-    setImages(prevImages => prevImages.map(img => {
-      return prevImages.indexOf(img) === index ? {...img, selected: true} : img;
-    }))
+  }
+
+  function updateImages(indexOfSelected, isMatch) {
+    if (isMatch) {
+      setImages(prevImages => prevImages.map((img, currentIndex) => {
+        return indexOfSelected === currentIndex ? {...img, completed: true} : img;
+      }));
+    } else {
+      setImages(prevImages => prevImages.map((img, currentIndex) => {
+        return currentIndex === indexOfSelected || currentIndex === indexOfFirstOpenImage ? {
+          ...img,
+          selected: false
+        } : img;
+      }));
+    }
+    setImageSelectedCount(0);
   }
 
   function showCards() {
@@ -60,24 +84,24 @@ function App() {
         index={index}
         imgSrc={img.imgSrc}
         selected={img.selected}
-        isDuplicate={img.isDuplicate}
+        completed={img.completed}
+        imageSelectedCount={imageSelectedCount}
         selectImage={selectImage}/>
     });
   }
 
   return (
     <>
-    {showSpinner &&
-      <div>
-        <LoadingSpinner/>
-        <h1>Loading images...</h1>
-      </div>
-    }
+      {showSpinner &&
+        <div>
+          <LoadingSpinner/>
+          <h1>Loading images...</h1>
+        </div>
+      }
       <div className="App animate__fadeIn animate__animated">
         {!showSpinner && showCards()}
       </div>
     </>
   );
 }
-
 export default App;
