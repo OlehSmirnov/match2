@@ -9,7 +9,7 @@ function App() {
 
   const NUMBER_OF_IMAGES = 8;
   const BEST_SCORE_KEY = "BEST_SCORE";
-  const photoSize = Math.floor(window.innerWidth / (NUMBER_OF_IMAGES * 1.1));
+  const photoSize = Math.floor(window.innerWidth / (NUMBER_OF_IMAGES * 1.25));
 
   const [images, setImages] = useState([{}]);
   const [showSpinner, setShowSpinner] = useState(false);
