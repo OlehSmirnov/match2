@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 
 const Card = ({index, imgSrc, selected, completed, selectImage, photoSize, imageSelectedCount}) => {
 
@@ -9,12 +9,8 @@ const Card = ({index, imgSrc, selected, completed, selectImage, photoSize, image
   }
 
   function handleClick() {
-    imageSelectedCount !== 2 ? selectImage(index, selected, completed) : console.log("E");
+    imageSelectedCount !== 2 ? selectImage(index, selected, completed) : console.log("Wait");
   }
-
-  useEffect(() => {
-
-  }, [selected])
 
   return (
     <div style={styles} className="card" onClick={handleClick}>

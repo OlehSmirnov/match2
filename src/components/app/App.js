@@ -3,19 +3,33 @@ import "animate.css";
 import LoadingSpinner from "react-loading-spin";
 import {useEffect, useState} from "react";
 import Card from "../card/Card";
+import ReactCanvasConfetti from "react-canvas-confetti";
 
 function App() {
+
+  const NUMBER_OF_IMAGES = 1;
+  const BEST_SCORE_KEY = "BEST_SCORE";
+  const photoSize = Math.floor(window.innerWidth / (NUMBER_OF_IMAGES * 11.1));
+
   const [images, setImages] = useState([{}]);
   const [showSpinner, setShowSpinner] = useState(false);
   const [imageSelectedCount, setImageSelectedCount] = useState(0);
   const [indexOfFirstOpenImage, setIndexOfFirstOpenImage] = useState(null);
-
-  const NUMBER_OF_IMAGES = 8;
-  const photoSize = Math.floor(window.innerWidth / 8.5);
+  const [numberOfTurns, setNumberOfTurns] = useState(0);
+  const [isWin, setIsWin] = useState(false);
+  const [currentBestScore, setCurrentBestScore] = useState(() => JSON.parse(localStorage.getItem(BEST_SCORE_KEY)) || 0);
+  const [fireConfettiSwitch, setFireConfettiSwitch] = useState(0);
 
   useEffect(() => {
     fillArray();
   }, []);
+
+  useEffect(() => {
+    if (isWin && (currentBestScore > numberOfTurns || currentBestScore === 0)) {
+      localStorage.setItem(BEST_SCORE_KEY, JSON.stringify(numberOfTurns));
+      setCurrentBestScore(numberOfTurns);
+    }
+  }, [isWin])
 
   async function fillArray() {
     try {
@@ -51,20 +65,25 @@ function App() {
     setImageSelectedCount(1);
     setIndexOfFirstOpenImage(indexOfSelected);
     if (imageSelectedCount === 1) {
+      setNumberOfTurns(prevNumber => prevNumber + 1);
       setImageSelectedCount(2);
       if (images[indexOfSelected].imgSrc === images[indexOfFirstOpenImage].imgSrc) {
-        setTimeout(() => updateImages(indexOfSelected, true), 500);
-      } else {
-        setTimeout(() => updateImages(indexOfSelected, false), 500);
-      }
+        updateImages(indexOfSelected, true);
+      } else
+        setTimeout(() => updateImages(indexOfSelected, false), 1000);
     }
   }
 
   function updateImages(indexOfSelected, isMatch) {
     if (isMatch) {
-      setImages(prevImages => prevImages.map((img, currentIndex) => {
-        return indexOfSelected === currentIndex ? {...img, completed: true} : img;
-      }));
+      const newArr = images.map((img, currentIndex) => {
+        return currentIndex === indexOfSelected || currentIndex === indexOfFirstOpenImage ? {
+          ...img,
+          completed: true
+        } : img;
+      });
+      setImages(newArr);
+      checkWin(newArr);
     } else {
       setImages(prevImages => prevImages.map((img, currentIndex) => {
         return currentIndex === indexOfSelected || currentIndex === indexOfFirstOpenImage ? {
@@ -73,7 +92,16 @@ function App() {
         } : img;
       }));
     }
+    setIndexOfFirstOpenImage(null);
     setImageSelectedCount(0);
+  }
+
+  function checkWin(arr) {
+    console.log(numberOfTurns);
+    if (arr.find(img => img.completed !== true) === undefined) {
+      setIsWin(true);
+      setInterval(() => setFireConfettiSwitch(prevNumber => prevNumber + 1), 1000);
+    }
   }
 
   function showCards() {
@@ -90,18 +118,26 @@ function App() {
     });
   }
 
+  if (showSpinner) {
+    return <div>
+      <LoadingSpinner/>
+      <h1>Loading images...</h1>
+    </div>
+  }
+
   return (
     <>
-      {showSpinner &&
-        <div>
-          <LoadingSpinner/>
-          <h1>Loading images...</h1>
-        </div>
-      }
-      <div className="App animate__fadeIn animate__animated">
-        {!showSpinner && showCards()}
+      <ReactCanvasConfetti className="confetti" fire={fireConfettiSwitch}/>
+      <div className="app-grid">
+        {showCards()}
       </div>
+      <footer>
+        <h1>Number of turns: {numberOfTurns}</h1>
+        <h1>Best result: {currentBestScore}</h1>
+        {isWin && <h1>You won!</h1>}
+      </footer>
     </>
   );
 }
+
 export default App;
