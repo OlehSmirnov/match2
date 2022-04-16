@@ -25,5 +25,15 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    z-index: -1;
+    pointer-events: none;
+}
+
+button {
+    height : 100%;
+    background-color: #537ea1;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
 }

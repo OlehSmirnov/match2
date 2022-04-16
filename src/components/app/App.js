@@ -7,9 +7,9 @@ import ReactCanvasConfetti from "react-canvas-confetti";
 
 function App() {
 
-  const NUMBER_OF_IMAGES = 1;
+  const NUMBER_OF_IMAGES = 8;
   const BEST_SCORE_KEY = "BEST_SCORE";
-  const photoSize = Math.floor(window.innerWidth / (NUMBER_OF_IMAGES * 11.1));
+  const photoSize = Math.floor(window.innerWidth / (NUMBER_OF_IMAGES * 1.1));
 
   const [images, setImages] = useState([{}]);
   const [showSpinner, setShowSpinner] = useState(false);
@@ -97,7 +97,6 @@ function App() {
   }
 
   function checkWin(arr) {
-    console.log(numberOfTurns);
     if (arr.find(img => img.completed !== true) === undefined) {
       setIsWin(true);
       setInterval(() => setFireConfettiSwitch(prevNumber => prevNumber + 1), 1000);
@@ -134,7 +133,10 @@ function App() {
       <footer>
         <h1>Number of turns: {numberOfTurns}</h1>
         <h1>Best result: {currentBestScore}</h1>
-        {isWin && <h1>You won!</h1>}
+        {isWin && <div>
+          <h1>You won!</h1>
+          <button onClick={() => window.location.reload()}><h2>Play again</h2></button>
+        </div>}
       </footer>
     </>
   );

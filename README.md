@@ -16,3 +16,5 @@ Main issue was basically creating an algorithm for a game. This includes:
 * Keeping track of selected images
 * Updating images based on if user choose correct or incorrect match
 * Creating proper data structure for game objects(images)
+
+[Live version](https://match2.netlify.app/)
